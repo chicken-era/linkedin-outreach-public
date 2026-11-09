@@ -3,22 +3,25 @@
 A Claude skill for customer discovery. You describe what you're trying to learn and who you want to talk to. Claude then:
 
 1. Finds relevant people on LinkedIn, by company and job title.
-2. Builds a spreadsheet: Contact Name, Company / Role, Segment, Found By, Stage, LinkedIn URL.
+2. Tracks them with Contact Name, Company / Role, Segment, Found By, Stage, LinkedIn URL, and a tailored message. You can keep this in a downloadable spreadsheet or in an app you already use, like Notion, Google Sheets, Airtable, or a CRM.
 3. Sends them connection requests without a note, from your own LinkedIn account.
 4. Writes a tailored follow-up message for each person, ready to send once they accept. It never sends messages for you.
 
 ## Before you start
 
 You need:
-- A Claude plan that supports skills and file creation.
-- Google Chrome with the **Claude in Chrome** extension installed and connected to your Claude account.
-- To be signed in to LinkedIn in that Chrome.
+- A Claude plan that supports skills.
+- One browser Claude can drive:
+  - **Claude in Chrome**: the Chrome extension, connected to your Claude account. It uses your existing LinkedIn sign-in in Chrome.
+  - **Claude desktop app**: its built-in browser pane. Sign in to LinkedIn there once. *(Should work; less tested than Chrome so far.)*
+- To be signed in to LinkedIn in that browser.
+- Optional: your tracking app (Notion, Google Sheets, Airtable, HubSpot...) connected to Claude as a connector, if you want contacts kept there.
 
-Help: https://support.claude.com (search "Claude in Chrome" and "skills").
+Help: https://support.claude.com (search "Claude in Chrome", "skills", or "connectors").
 
 ## Install
 
-Download the `linkedin-outreach-public` folder (it contains `SKILL.md`) and add it as a skill in Claude.
+Download this repo (green **Code** button → **Download ZIP**) and add the `linkedin-outreach-public` folder (it contains `SKILL.md`) as a skill in Claude.
 
 ## Use
 
@@ -26,7 +29,13 @@ Open a new chat and say something like:
 
 > Use the linkedin-outreach-public skill to find 30 people for customer discovery.
 
-Claude first checks that Chrome and LinkedIn are connected. Then it asks for your name, your affiliation, what you want to learn, your target markets and titles, how many contacts you want, and your outreach message (or it drafts one from a proven template and shows you an example first).
+Claude first checks which browser it can use, and that you're signed in to LinkedIn. Then it asks for:
+- your name and affiliation
+- what you want to learn
+- your target markets and job titles
+- how many contacts you want
+- your outreach message (or it drafts one from a proven template and shows you an example first)
+- where to track contacts
 
 ## Responsible use
 
