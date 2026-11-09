@@ -7,7 +7,15 @@ description: Turn a customer-discovery thesis into a vetted LinkedIn contact lis
 
 Use when the user wants to find people on LinkedIn for customer discovery or expert calls, send them connection requests, and have a tailored follow-up message ready for when they accept.
 
-Order is always: PREFLIGHT -> SETUP -> GATHER -> TRACKER -> CONNECT -> FINISH. The agent only ever sends connection requests, always without a note. It never sends messages, InMails, or emails.
+Order is always: PREFLIGHT -> SETUP -> GATHER -> TRACKER -> CONNECT -> FINISH, plus an optional FOLLOW-UP phase later. By default the agent only sends connection requests, without a note. It sends a message, InMail, or note only in FOLLOW-UP, and only after the user approves those exact messages and recipients in chat. It never sends email.
+
+## Caveats (tell the user once, at the start of the first run)
+
+- **Automation risk.** LinkedIn's User Agreement restricts automated activity on the site. Even at low volume, LinkedIn can warn, restrict, or temporarily block an account it thinks is automated. The user runs this on their own account and accepts that risk.
+- **Invite limits.** LinkedIn doesn't publish official numbers. Commonly observed: about 100 connection requests per rolling 7 days, the same on free and Premium; roughly 15-25 a day for established accounts and about 5 a day for new or rarely used ones.
+- **Notes on invites.** Free accounts get only a small number of personalized notes per month; notes are capped at about 300 characters.
+- **Premium.** Premium doesn't raise the invite limit. It adds InMail credits (message people without connecting) and more invite notes.
+- **Results are only as good as LinkedIn search.** Titles can be out of date, and some people won't accept.
 
 ## What the user needs (tell them this if anything is missing)
 
@@ -55,6 +63,8 @@ Ask these in one short round (use a multiple-choice question tool if available; 
 9. **Warm-connection preferences** - their school(s) for alumni preference; prefer 2nd-degree connections (default: yes).
 10. **Outreach message** - paste their own template, OR just confirm name + intention and the agent drafts one from the default template below. Show the user one filled example and get a yes before using it for everyone.
 11. **Connect automatically or review first?** - default: build the sheet, then connect to everyone on it. If the user picks "review first", stop after the sheet and wait for an explicit yes naming who to connect with.
+11b. **Account and pace** - Is the LinkedIn account new or rarely used? Roughly how many invites have they sent in the last 7 days? Free or Premium? Use this to set today's cap (see Staying within LinkedIn's limits). If the contact count is above today's cap, split it across days and say so.
+11c. **How to reach out** - (a) invite without a note, then message after they accept (default, works on any account); (b) invite with a short note (uses the free note allowance or Premium); (c) Premium only: InMail people instead of, or as well as, inviting.
 12. **Existing lists to skip** - any earlier contact sheet to dedupe against, and their existing segment names to reuse.
 13. **Found By** - name to put in the Found By column (default: the user's first name).
 14. **Where to track contacts** - a downloadable spreadsheet (default), or an app they already use: Notion, Google Sheets, Airtable, a CRM (HubSpot, Salesforce, Attio), or another connected app. They can also pick both. If they choose an app, ask for the exact database/sheet/list to use (a link or name), or offer to create a new one.
@@ -89,7 +99,7 @@ Write every contact to the tracker chosen in Setup (question 14) with Stage = "T
 **Fields for every contact** (same in any tracker):
 | Contact Name | Company / Role | Segment | Found By | Stage | Email / LinkedIn | Message |
 - Company / Role = "<profile title> at <company>".
-- Stage: To contact -> Contacted (request sent). Later stages are the user's.
+- Stage: To contact -> Contacted (request sent) -> Accepted -> Messaged. Later stages (replied, call booked) are the user's.
 - Message = the tailored LinkedIn message to send after they accept. Never sent by the agent.
 
 **Plus one list of segments**: Segment | Hypothesis (bullets as above).
@@ -132,9 +142,31 @@ Notes:
 - On NO SEND BUTTON / NO CONNECT OPTION / unconfirmed, take a screenshot: the dialog or menu is usually just slow. Click "Connect" in the More menu, then "Send without a note", and confirm via the Pending button or the "Invitation sent" toast. Some profiles keep a Follow button after sending; the toast is the proof.
 - If the JavaScript call times out (page frozen), re-navigate to the same profile and finish with screenshot + clicks.
 - In the built-in browser, LinkedIn's layout can differ slightly by window size; if a script result looks wrong, take a screenshot and finish that profile by hand-clicking.
-- Send at most ~40 requests per session. Stop and tell the user if LinkedIn shows a limit, CAPTCHA, or an email-required prompt. Never solve CAPTCHAs.
+- Never send more than today's cap (see Staying within LinkedIn's limits). Stop and tell the user if LinkedIn shows a limit or warning, a CAPTCHA, an identity check, or an email-required prompt. Never solve CAPTCHAs or verification challenges, and don't try to work around a limit.
+- If the user chose invites with a note (11c-b), use a shortened version of their message under 300 characters, shown to them once for approval first. In the "Add a note?" dialog, choose "Add a note", type it, and send. If LinkedIn says the free note allowance is used up, stop and ask whether to continue without notes.
 - The Sent invitations page (https://www.linkedin.com/mynetwork/invitation-manager/sent/) only shows the most recent ~20; use it as a spot check and rely on each profile's Pending state for the rest.
 - Set Stage = "Contacted" for confirmed people in the tracker (spreadsheet and/or app) and close the tab.
+
+## Staying within LinkedIn's limits
+
+- **Daily cap (default):** 20 invites for an established account, 5 for a new or rarely used one. Never more than about 100 in any 7 days, counting what the user already sent.
+- **Quality over volume:** target only people who clearly match; low acceptance rates hurt the account. Don't re-invite anyone who ignored or declined.
+- **Clean up:** if the user has hundreds of old pending invites, suggest they withdraw stale ones themselves (My Network -> Manage -> Sent).
+- **Stop on any warning** and tell the user; resume another day only when they say so.
+- **Multi-day runs:** keep the tracker's Stage column current so the next run picks up where this one stopped and doesn't contact anyone twice.
+
+## Phase 4: FOLLOW-UP (optional, when the user asks)
+
+Use when the user says something like "check who accepted and send the messages", or chose InMail.
+
+1. **Check acceptances.** For each contact at Stage "Contacted", open their profile. If it shows 1st-degree, they accepted; set Stage = "Accepted".
+2. **Show before sending.** List the accepted people (or, for InMail, the chosen people) with the exact message each one will get. Ask for an explicit yes. Approval covers only those people and those messages; if the user edits a message, use their edit.
+3. **Send.** For each approved person: on their profile click "Message", wait for the message box, paste the message, check with a screenshot that the right name and text are there, then click Send. Confirm it appears in the conversation.
+   - Messaging 1st-degree connections works on any account. InMail to non-connections needs Premium credits; if LinkedIn shows none left, stop and tell the user.
+   - Pace it like invites: no more than the daily cap, stop on any warning.
+4. Set Stage = "Messaged" in the tracker and report who got a message.
+
+Never send anything the user hasn't seen and approved in this conversation, and never reply to replies on the user's behalf.
 
 ## Message template
 
@@ -161,7 +193,7 @@ Rules:
 
 ## Finish
 
-Send the final spreadsheet and/or the link to the app tracker (Stage updated), say which browser was used, how many requests were confirmed sent, and list anyone skipped and why.
+Send the final spreadsheet and/or the link to the app tracker (Stage updated), say which browser was used, how many requests were confirmed sent, and list anyone skipped and why. If some contacts were held for another day because of the daily cap, say how many and that running the skill again will continue. Remind the user they can later ask to "check who accepted and send the messages".
 
 ## Responsible use
 
